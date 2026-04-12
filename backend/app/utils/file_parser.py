@@ -1,6 +1,6 @@
 """
-文件解析工具
-支持PDF、Markdown、TXT文件的文本提取
+Herramienta de análisis de archivos
+Soporta extracción de texto de archivos PDF, Markdown y TXT
 """
 
 import os
@@ -10,23 +10,23 @@ from typing import List, Optional
 
 def _read_text_with_fallback(file_path: str) -> str:
     """
-    读取文本文件，UTF-8失败时自动探测编码。
+    Lee el archivo de texto, detecta automáticamente la codificación cuando falla UTF-8.
     
-    采用多级回退策略：
-    1. 首先尝试 UTF-8 解码
-    2. 使用 charset_normalizer 检测编码
-    3. 回退到 chardet 检测编码
-    4. 最终使用 UTF-8 + errors='replace' 兜底
+    Utiliza una estrategia de retroceso de múltiples niveles:
+    1. Primero intenta la decodificación UTF-8
+    2. Usa charset_normalizer para detectar la codificación
+    3. Retrocede a chardet para detectar la codificación
+    4. Finalmente usa UTF-8 + errors='replace' como último recurso
     
     Args:
-        file_path: 文件路径
+        file_path: Ruta del archivo
         
     Returns:
-        解码后的文本内容
+        Contenido de texto decodificado
     """
     data = Path(file_path).read_bytes()
     
-    # 首先尝试 UTF-8
+    # Primero intenta UTF-8
     try:
         return data.decode('utf-8')
     except UnicodeDecodeError:
@@ -59,30 +59,30 @@ def _read_text_with_fallback(file_path: str) -> str:
 
 
 class FileParser:
-    """文件解析器"""
+    """Parser de archivos"""
     
     SUPPORTED_EXTENSIONS = {'.pdf', '.md', '.markdown', '.txt'}
     
     @classmethod
     def extract_text(cls, file_path: str) -> str:
         """
-        从文件中提取文本
+        Extrae texto del archivo
         
         Args:
-            file_path: 文件路径
+            file_path: Ruta del archivo
             
         Returns:
-            提取的文本内容
+            Texto extraído
         """
         path = Path(file_path)
         
         if not path.exists():
-            raise FileNotFoundError(f"文件不存在: {file_path}")
+            raise FileNotFoundError(f"Archivo no encontrado: {file_path}")
         
         suffix = path.suffix.lower()
         
         if suffix not in cls.SUPPORTED_EXTENSIONS:
-            raise ValueError(f"不支持的文件格式: {suffix}")
+            raise ValueError(f"Formato de archivo no soportado: {suffix}")
         
         if suffix == '.pdf':
             return cls._extract_from_pdf(file_path)
@@ -91,15 +91,15 @@ class FileParser:
         elif suffix == '.txt':
             return cls._extract_from_txt(file_path)
         
-        raise ValueError(f"无法处理的文件格式: {suffix}")
+        raise ValueError(f"Formato de archivo no soportado: {suffix}")
     
     @staticmethod
     def _extract_from_pdf(file_path: str) -> str:
-        """从PDF提取文本"""
+        """Extrae texto del PDF"""
         try:
             import fitz  # PyMuPDF
         except ImportError:
-            raise ImportError("需要安装PyMuPDF: pip install PyMuPDF")
+            raise ImportError("Se requiere PyMuPDF: pip install PyMuPDF")
         
         text_parts = []
         with fitz.open(file_path) as doc:
@@ -112,24 +112,24 @@ class FileParser:
     
     @staticmethod
     def _extract_from_md(file_path: str) -> str:
-        """从Markdown提取文本，支持自动编码检测"""
+        """Extrae texto del Markdown, soporta detección automática de codificación"""
         return _read_text_with_fallback(file_path)
     
     @staticmethod
     def _extract_from_txt(file_path: str) -> str:
-        """从TXT提取文本，支持自动编码检测"""
+        """Extrae texto del TXT, soporta detección automática de codificación"""
         return _read_text_with_fallback(file_path)
     
     @classmethod
     def extract_from_multiple(cls, file_paths: List[str]) -> str:
         """
-        从多个文件提取文本并合并
+        Extrae texto de múltiples archivos y los combina
         
         Args:
-            file_paths: 文件路径列表
+            file_paths: Lista de rutas de archivos
             
         Returns:
-            合并后的文本
+            Texto combinado
         """
         all_texts = []
         
@@ -150,15 +150,15 @@ def split_text_into_chunks(
     overlap: int = 50
 ) -> List[str]:
     """
-    将文本分割成小块
+    Divide el texto en trozos
     
     Args:
-        text: 原始文本
-        chunk_size: 每块的字符数
-        overlap: 重叠字符数
+        text: Texto original
+        chunk_size: Número de caracteres por trozo
+        overlap: Número de caracteres de superposición
         
     Returns:
-        文本块列表
+        Lista de trozos de texto
     """
     if len(text) <= chunk_size:
         return [text] if text.strip() else []
@@ -169,9 +169,9 @@ def split_text_into_chunks(
     while start < len(text):
         end = start + chunk_size
         
-        # 尝试在句子边界处分割
+        # Intenta dividir en el límite de la oración
         if end < len(text):
-            # 查找最近的句子结束符
+            # Busca el final de la oración más cercano
             for sep in ['。', '！', '？', '.\n', '!\n', '?\n', '\n\n', '. ', '! ', '? ']:
                 last_sep = text[start:end].rfind(sep)
                 if last_sep != -1 and last_sep > chunk_size * 0.3:
@@ -182,7 +182,7 @@ def split_text_into_chunks(
         if chunk:
             chunks.append(chunk)
         
-        # 下一个块从重叠位置开始
+        # El siguiente trozo comienza desde la posición de superposición
         start = end - overlap if end < len(text) else len(text)
     
     return chunks

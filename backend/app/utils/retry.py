@@ -1,6 +1,6 @@
 """
-API调用重试机制
-用于处理LLM等外部API调用的重试逻辑
+Mecanismo de reintento de llamadas a la API: Gestiona la lógica de reintento 
+para llamadas a API externas como LLM.
 """
 
 import time
@@ -22,16 +22,16 @@ def retry_with_backoff(
     on_retry: Optional[Callable[[Exception, int], None]] = None
 ):
     """
-    带指数退避的重试装饰器
+    Decorador con retroceso exponencial
     
     Args:
-        max_retries: 最大重试次数
-        initial_delay: 初始延迟（秒）
-        max_delay: 最大延迟（秒）
-        backoff_factor: 退避因子
-        jitter: 是否添加随机抖动
-        exceptions: 需要重试的异常类型
-        on_retry: 重试时的回调函数 (exception, retry_count)
+        max_retries: Número máximo de reintentos
+        initial_delay: Retraso inicial (segundos)
+        max_delay: Retraso máximo (segundos)
+        backoff_factor: Factor de retroceso
+        jitter: Agregar jitter aleatorio
+        exceptions: Tipos de excepciones a reintentar
+        on_retry: Función de devolución de llamada al reintentar (excepción, recuento de reintentos)
     
     Usage:
         @retry_with_backoff(max_retries=3)
@@ -52,17 +52,17 @@ def retry_with_backoff(
                     last_exception = e
                     
                     if attempt == max_retries:
-                        logger.error(f"函数 {func.__name__} 在 {max_retries} 次重试后仍失败: {str(e)}")
+                        logger.error(f"La función {func.__name__} falló después de {max_retries} reintentos: {str(e)}")
                         raise
                     
-                    # 计算延迟
+                    # Calcular retraso
                     current_delay = min(delay, max_delay)
                     if jitter:
                         current_delay = current_delay * (0.5 + random.random())
                     
                     logger.warning(
-                        f"函数 {func.__name__} 第 {attempt + 1} 次尝试失败: {str(e)}, "
-                        f"{current_delay:.1f}秒后重试..."
+                        f"La función {func.__name__} falló en el intento {attempt + 1}: {str(e)}, "
+                        f"reintentando en {current_delay:.1f} segundos..."
                     )
                     
                     if on_retry:
@@ -87,7 +87,7 @@ def retry_with_backoff_async(
     on_retry: Optional[Callable[[Exception, int], None]] = None
 ):
     """
-    异步版本的重试装饰器
+    Versión asíncrona del decorador de reintentos
     """
     import asyncio
     
@@ -105,7 +105,7 @@ def retry_with_backoff_async(
                     last_exception = e
                     
                     if attempt == max_retries:
-                        logger.error(f"异步函数 {func.__name__} 在 {max_retries} 次重试后仍失败: {str(e)}")
+                        logger.error(f"La función asíncrona {func.__name__} falló después de {max_retries} reintentos: {str(e)}")
                         raise
                     
                     current_delay = min(delay, max_delay)
@@ -113,8 +113,8 @@ def retry_with_backoff_async(
                         current_delay = current_delay * (0.5 + random.random())
                     
                     logger.warning(
-                        f"异步函数 {func.__name__} 第 {attempt + 1} 次尝试失败: {str(e)}, "
-                        f"{current_delay:.1f}秒后重试..."
+                        f"La función asíncrona {func.__name__} falló en el intento {attempt + 1}: {str(e)}, "
+                        f"reintentando en {current_delay:.1f} segundos..."
                     )
                     
                     if on_retry:
@@ -131,7 +131,7 @@ def retry_with_backoff_async(
 
 class RetryableAPIClient:
     """
-    可重试的API客户端封装
+    Cliente API reintentable
     """
     
     def __init__(
@@ -154,16 +154,16 @@ class RetryableAPIClient:
         **kwargs
     ) -> Any:
         """
-        执行函数调用并在失败时重试
+        Ejecuta la llamada a la función y reintenta si falla
         
         Args:
-            func: 要调用的函数
-            *args: 函数参数
-            exceptions: 需要重试的异常类型
-            **kwargs: 函数关键字参数
+            func: Función a llamar
+            *args: Argumentos de la función
+            exceptions: Tipos de excepciones a reintentar
+            **kwargs: Argumentos de palabra clave de la función
             
         Returns:
-            函数返回值
+            Valor de retorno de la función
         """
         last_exception = None
         delay = self.initial_delay
@@ -183,8 +183,8 @@ class RetryableAPIClient:
                 current_delay = current_delay * (0.5 + random.random())
                 
                 logger.warning(
-                    f"API调用第 {attempt + 1} 次尝试失败: {str(e)}, "
-                    f"{current_delay:.1f}秒后重试..."
+                    f"La llamada a la API falló en el intento {attempt + 1}: {str(e)}, "
+                    f"reintentando en {current_delay:.1f} segundos..."
                 )
                 
                 time.sleep(current_delay)
@@ -200,16 +200,16 @@ class RetryableAPIClient:
         continue_on_failure: bool = True
     ) -> Tuple[list, list]:
         """
-        批量调用并对每个失败项单独重试
+        Llama por lotes y reintenta individualmente cada elemento fallido
         
         Args:
-            items: 要处理的项目列表
-            process_func: 处理函数，接收单个item作为参数
-            exceptions: 需要重试的异常类型
-            continue_on_failure: 单项失败后是否继续处理其他项
+            items: Lista de elementos a procesar
+            process_func: Función de procesamiento que acepta un solo item como parámetro
+            exceptions: Tipos de excepciones a reintentar
+            continue_on_failure: Si falla un elemento, ¿continuar procesando los demás?
             
         Returns:
-            (成功结果列表, 失败项列表)
+            (Lista de resultados exitosos, Lista de elementos fallidos)
         """
         results = []
         failures = []

@@ -1,7 +1,8 @@
-"""Zep Graph 分页读取工具。
+"""Herramienta de lectura paginada de Zep Graph。
 
-Zep 的 node/edge 列表接口使用 UUID cursor 分页，
-本模块封装自动翻页逻辑（含单页重试），对调用方透明地返回完整列表。
+La interfaz de lista de nodos/bordes de Zep utiliza la paginación con cursor UUID.
+Este módulo encapsula la lógica de paginación automática (incluyendo reintentos por página),
+devolviendo la lista completa de forma transparente al llamador.
 """
 
 from __future__ import annotations
@@ -31,7 +32,7 @@ def _fetch_page_with_retry(
     page_description: str = "page",
     **kwargs: Any,
 ) -> list[Any]:
-    """单页请求，失败时指数退避重试。仅重试网络/IO类瞬态错误。"""
+    """Las solicitudes de una sola página se reintentan exponencialmente en caso de fallo. Solo se reintentan los errores transitorios de red/E/S."""
     if max_retries < 1:
         raise ValueError("max_retries must be >= 1")
 
@@ -64,7 +65,7 @@ def fetch_all_nodes(
     max_retries: int = _DEFAULT_MAX_RETRIES,
     retry_delay: float = _DEFAULT_RETRY_DELAY,
 ) -> list[Any]:
-    """分页获取图谱节点，最多返回 max_items 条（默认 2000）。每页请求自带重试。"""
+    """Obtiene todos los nodos del grafo mediante paginación, devolviendo un máximo de max_items (por defecto 2000). Cada solicitud de página incluye reintentos."""
     all_nodes: list[Any] = []
     cursor: str | None = None
     page_num = 0
@@ -109,7 +110,7 @@ def fetch_all_edges(
     max_retries: int = _DEFAULT_MAX_RETRIES,
     retry_delay: float = _DEFAULT_RETRY_DELAY,
 ) -> list[Any]:
-    """分页获取图谱所有边，返回完整列表。每页请求自带重试。"""
+    """Obtiene todas las aristas del grafo mediante paginación, devolviendo la lista completa. Cada solicitud de página incluye reintentos."""
     all_edges: list[Any] = []
     cursor: str | None = None
     page_num = 0

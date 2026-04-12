@@ -1,6 +1,5 @@
 """
-LLM客户端封装
-统一使用OpenAI格式调用
+Encapsulación del cliente LLM; uso unificado del formato OpenAI para las llamadas.
 """
 
 import json
@@ -40,16 +39,16 @@ class LLMClient:
         response_format: Optional[Dict] = None
     ) -> str:
         """
-        发送聊天请求
+        Enviar solicitud de chat
         
         Args:
-            messages: 消息列表
-            temperature: 温度参数
-            max_tokens: 最大token数
-            response_format: 响应格式（如JSON模式）
+            messages: Lista de mensajes
+            temperature: Parámetro de temperatura
+            max_tokens: Número máximo de tokens
+            response_format: Formato de respuesta (como el modo JSON)
             
         Returns:
-            模型响应文本
+            Texto de respuesta del modelo
         """
         kwargs = {
             "model": self.model,
@@ -74,15 +73,15 @@ class LLMClient:
         max_tokens: int = 4096
     ) -> Dict[str, Any]:
         """
-        发送聊天请求并返回JSON
+        Enviar solicitud de chat y devolver JSON
         
         Args:
-            messages: 消息列表
-            temperature: 温度参数
-            max_tokens: 最大token数
+            messages: Lista de mensajes
+            temperature: Parámetro de temperatura
+            max_tokens: Número máximo de tokens
             
         Returns:
-            解析后的JSON对象
+            Objeto JSON analizado
         """
         response = self.chat(
             messages=messages,
@@ -99,5 +98,5 @@ class LLMClient:
         try:
             return json.loads(cleaned_response)
         except json.JSONDecodeError:
-            raise ValueError(f"LLM返回的JSON格式无效: {cleaned_response}")
+            raise ValueError(f"El formato JSON devuelto por LLM no es válido: {cleaned_response}")
 
