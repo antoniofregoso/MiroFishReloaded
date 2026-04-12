@@ -1,11 +1,11 @@
 """
-Zep检索工具服务
-封装图谱搜索、节点读取、边查询等工具，供Report Agent使用
+El servicio de búsqueda Zep integra herramientas para la búsqueda en grafos,
+la lectura de nodos, la consulta de aristas, etc., para su uso por el Agente de Informes.
 
-核心检索工具（优化后）：
-1. InsightForge（深度洞察检索）- 最强大的混合检索，自动生成子问题并多维度检索
-2. PanoramaSearch（广度搜索）- 获取全貌，包括过期内容
-3. QuickSearch（简单搜索）- 快速检索
+Herramientas de búsqueda principales (optimizadas):
+1. InsightForge (Búsqueda de información profunda): La búsqueda híbrida más potente, que genera automáticamente subpreguntas y realiza búsquedas multidimensionales.
+2. PanoramaSearch (Búsqueda amplia): Obtiene una visión completa, incluyendo contenido caducado.
+3. QuickSearch (Búsqueda simple): Recuperación rápida.
 """
 
 import time
@@ -26,7 +26,7 @@ logger = get_logger('mirofish.zep_tools')
 
 @dataclass
 class SearchResult:
-    """搜索结果"""
+    """Resultados de la búsqueda"""
     facts: List[str]
     edges: List[Dict[str, Any]]
     nodes: List[Dict[str, Any]]

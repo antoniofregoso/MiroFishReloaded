@@ -48,6 +48,8 @@ class OasisAgentProfile:
     age: Optional[int] = None
     gender: Optional[str] = None
     mbti: Optional[str] = None
+    vals2: Optional[str] = None
+    ocean: Optional[str] = None
     country: Optional[str] = None
     profession: Optional[str] = None
     interested_topics: List[str] = field(default_factory=list)
@@ -59,7 +61,7 @@ class OasisAgentProfile:
     created_at: str = field(default_factory=lambda: datetime.now().strftime("%Y-%m-%d"))
     
     def to_reddit_format(self) -> Dict[str, Any]:
-        """转换为Reddit平台格式"""
+        """Convertir al formato de la plataforma Reddit"""
         profile = {
             "user_id": self.user_id,
             "username": self.user_name,  # El campo requerido por la biblioteca OASIS es username (sin guion bajo)
@@ -77,6 +79,10 @@ class OasisAgentProfile:
             profile["gender"] = self.gender
         if self.mbti:
             profile["mbti"] = self.mbti
+        if self.vals2:
+            profile["vals2"] = self.vals2
+        if self.ocean:
+            profile["ocean"] = self.ocean
         if self.country:
             profile["country"] = self.country
         if self.profession:
@@ -87,7 +93,7 @@ class OasisAgentProfile:
         return profile
     
     def to_twitter_format(self) -> Dict[str, Any]:
-        """转换为Twitter平台格式"""
+        """Convertir al formato de la plataforma de Twitter"""
         profile = {
             "user_id": self.user_id,
             "username": self.user_name,  # El campo requerido por la biblioteca OASIS es username (sin guion bajo)
@@ -107,6 +113,10 @@ class OasisAgentProfile:
             profile["gender"] = self.gender
         if self.mbti:
             profile["mbti"] = self.mbti
+        if self.vals2:
+            profile["vals2"] = self.vals2
+        if self.ocean:
+            profile["ocean"] = self.ocean
         if self.country:
             profile["country"] = self.country
         if self.profession:
@@ -131,6 +141,8 @@ class OasisAgentProfile:
             "age": self.age,
             "gender": self.gender,
             "mbti": self.mbti,
+            "vals2": self.vals2,
+            "ocean": self.ocean,
             "country": self.country,
             "profession": self.profession,
             "interested_topics": self.interested_topics,
@@ -158,6 +170,25 @@ class OasisProfileGenerator:
         "INFJ", "INFP", "ENFJ", "ENFP",
         "ISTJ", "ISFJ", "ESTJ", "ESFJ",
         "ISTP", "ISFP", "ESTP", "ESFP"
+    ]
+
+    VALS2_TYPES = [
+        "Strivers",
+        "Achievers",
+        "Experiencers",
+        "Makers",
+        "Thinkers",
+        "Believers",
+        "Strugglers",
+        "Survivors"
+    ]
+
+    OCEAN_TYPES = [
+        "Openness",
+        "Conscientiousness",
+        "Extraversion",
+        "Agreeableness",
+        "Neuroticism"
     ]
     
     # Lista de países comunes
@@ -266,6 +297,8 @@ class OasisProfileGenerator:
             age=profile_data.get("age"),
             gender=profile_data.get("gender"),
             mbti=profile_data.get("mbti"),
+            vals2=profile_data.get("vals2"),
+            ocean=profile_data.get("ocean"),
             country=profile_data.get("country"),
             profession=profile_data.get("profession"),
             interested_topics=profile_data.get("interested_topics", []),
@@ -710,9 +743,11 @@ Por favor, genera JSON que contenga los siguientes campos:
 3. age: Edad (debe ser un número entero)
 4. gender: Género, debe ser en inglés: "male" o "female"
 5. mbti: Tipo MBTI (como INTJ, ENFP, etc.)
-6. country: País (usar chino, como "中国")
-7. profession: Profesión
-8. interested_topics: Array de temas de interés
+6. vals2: Valores y estilos de vida (como Strivers, Achievers, etc.)
+7. ocean: Personalidad (como Openness, Conscientiousness, etc.)
+8. country: País (usar chino, como "中国")
+9. profession: Profesión
+10. interested_topics: Array de temas de interés
 
 Importante:
 - Todos los valores de campo deben ser cadenas o números, no uses caracteres de nueva línea
@@ -759,9 +794,11 @@ Por favor, genera JSON que contenga los siguientes campos:
 3. age:El valor fijo es 30 (la antigüedad virtual de la cuenta institucional).）
 4. gender: 固定填"other"（机构账号使用other表示非个人）
 5. mbti: Tipo MBTI, utilizado para describir el estilo de la cuenta, como ISTJ representa conservador y riguroso
-6. country: País (usar chino, como "中国")
-7. profession: Descripción de la función institucional
-8. interested_topics: Array de temas de interés
+6. vals2: Valores y estilos de vida
+7. ocean: Personalidad (como Openness, Conscientiousness, etc.)
+8. country: País (usar chino, como "中国")
+9. profession: Descripción de la función institucional
+10. interested_topics: Array de temas de interés
 
 Importante:
 - Todos los valores de campo deben ser cadenas o números, no uses caracteres de nueva línea
@@ -789,6 +826,8 @@ Importante:
                 "age": random.randint(18, 30),
                 "gender": random.choice(["male", "female"]),
                 "mbti": random.choice(self.MBTI_TYPES),
+                "vals2": random.choice(self.VALS2_TYPES),
+                "ocean": random.choice(self.OCEAN_TYPES),
                 "country": random.choice(self.COUNTRIES),
                 "profession": "Student",
                 "interested_topics": ["Education", "Social Issues", "Technology"],
@@ -801,6 +840,8 @@ Importante:
                 "age": random.randint(35, 60),
                 "gender": random.choice(["male", "female"]),
                 "mbti": random.choice(["ENTJ", "INTJ", "ENTP", "INTP"]),
+                "vals2": random.choice(self.VALS2_TYPES),
+                "ocean": random.choice(self.OCEAN_TYPES),
                 "country": random.choice(self.COUNTRIES),
                 "profession": entity_attributes.get("occupation", "Expert"),
                 "interested_topics": ["Politics", "Economics", "Culture & Society"],
@@ -813,6 +854,8 @@ Importante:
                 "age": 30,  # Antigüedad virtual de la cuenta institucional
                 "gender": "other",  # Las cuentas institucionales usan other
                 "mbti": "ISTJ",  # Estilo de cuenta: riguroso y conservador
+                "vals2": random.choice(self.VALS2_TYPES),
+                "ocean": random.choice(self.OCEAN_TYPES),
                 "country": "中国",
                 "profession": "Media",
                 "interested_topics": ["General News", "Current Events", "Public Affairs"],
@@ -825,19 +868,23 @@ Importante:
                 "age": 30,  # Antigüedad virtual de la cuenta institucional
                 "gender": "other",  # Las cuentas institucionales usan other
                 "mbti": "ISTJ",  # Estilo de cuenta: riguroso y conservador
+                "vals2": random.choice(self.VALS2_TYPES),
+                "ocean": random.choice(self.OCEAN_TYPES),
                 "country": "中国",
                 "profession": entity_type,
                 "interested_topics": ["Public Policy", "Community", "Official Announcements"],
             }
         
         else:
-            # 默认人设
+            # Persona predeterminada
             return {
                 "bio": entity_summary[:150] if entity_summary else f"{entity_type}: {entity_name}",
                 "persona": entity_summary or f"{entity_name} is a {entity_type.lower()} participating in social discussions.",
                 "age": random.randint(25, 50),
                 "gender": random.choice(["male", "female"]),
                 "mbti": random.choice(self.MBTI_TYPES),
+                "vals2": random.choice(self.VALS2_TYPES),
+                "ocean": random.choice(self.OCEAN_TYPES),
                 "country": random.choice(self.COUNTRIES),
                 "profession": entity_type,
                 "interested_topics": ["General", "Social Issues"],
@@ -1025,14 +1072,14 @@ Importante:
             f"{separator}",
             f"Nombre de usuario: {profile.user_name}",
             f"",
-            f"【简介】",
+            f"【Introducción】",
             f"{profile.bio}",
             f"",
             f"【Perfil detallado】",
             f"{profile.persona}",
             f"",
             f"【Atributos básicos】",
-            f"Edad: {profile.age} | Género: {profile.gender} | MBTI: {profile.mbti}",
+            f"Edad: {profile.age} | Género: {profile.gender} | MBTI: {profile.mbti} | VALS2: {profile.vals2} | OCEAN: {profile.ocean}",
             f"Profesión: {profile.profession} | País: {profile.country}",
             f"Temas de interés: {topics_str}",
             separator
@@ -1083,7 +1130,7 @@ Importante:
         """
         import csv
         
-        # 确保文件扩展名是.csv
+        # Asegúrese de que la extensión del archivo sea .csv
         if not file_path.endswith('.csv'):
             file_path = file_path.replace('.json', '.csv')
         
@@ -1158,6 +1205,8 @@ Importante:
         - age: Edad (entero)
         - gender: "male", "female", o "other"
         - mbti: Tipo MBTI
+        - vals2: Valores
+        - ocean: OCEAN
         - country: País
         """
         data = []
@@ -1168,14 +1217,16 @@ Importante:
                 "username": profile.user_name,
                 "name": profile.name,
                 "bio": profile.bio[:150] if profile.bio else f"{profile.name}",
-                "persona": profile.persona or f"{profile.name} is a participant in social discussions.",
+                "persona": profile.persona or f"{profile.name} participa en debates sociales.",
                 "karma": profile.karma if profile.karma else 1000,
                 "created_at": profile.created_at,
                 # Campos requeridos por OASIS - asegurar que todos tengan valores predeterminados
                 "age": profile.age if profile.age else 30,
                 "gender": self._normalize_gender(profile.gender),
                 "mbti": profile.mbti if profile.mbti else "ISTJ",
-                "country": profile.country if profile.country else "中国",
+                "vals2": profile.vals2 if profile.vals2 else "Achievers",
+                "ocean": profile.ocean if profile.ocean else "Openness",
+                "country": profile.country if profile.country else "México",
             }
             
             # Campos opcionales
