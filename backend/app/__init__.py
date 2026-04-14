@@ -1,12 +1,12 @@
 """
-MiroFishReloaded Backend - Flask应用工厂
+MiroFishReloaded Backend - Fábrica de aplicaciones Flask
 """
 
 import os
 import warnings
 
-# 抑制 multiprocessing resource_tracker 的警告（来自第三方库如 transformers）
-# 需要在所有其他导入之前设置
+# Suprimir advertencias de multiprocessing resource_tracker (de bibliotecas de terceros como transformers)
+# Debe configurarse antes de todas las demás importaciones
 warnings.filterwarnings("ignore", message=".*resource_tracker.*")
 
 from flask import Flask, request
@@ -62,13 +62,13 @@ def create_app(config_class=Config):
         logger.debug(f"Respuesta: {response.status_code}")
         return response
     
-    # 注册蓝图
+    # Plan de registro
     from .api import graph_bp, simulation_bp, report_bp
     app.register_blueprint(graph_bp, url_prefix='/api/graph')
     app.register_blueprint(simulation_bp, url_prefix='/api/simulation')
     app.register_blueprint(report_bp, url_prefix='/api/report')
     
-    # 健康检查
+    # Verificación de salud
     @app.route('/health')
     def health():
         return {'status': 'ok', 'service': 'MiroFishReloaded Backend'}

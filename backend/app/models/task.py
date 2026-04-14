@@ -1,6 +1,6 @@
 """
-任务状态管理
-用于跟踪长时间运行的任务（如图谱构建）
+Gestión del estado de tareas
+Utilizado para rastrear tareas de larga duración (como la construcción de gráficos)
 """
 
 import uuid
@@ -14,16 +14,16 @@ from ..utils.locale import t
 
 
 class TaskStatus(str, Enum):
-    """任务状态枚举"""
-    PENDING = "pending"          # 等待中
-    PROCESSING = "processing"    # 处理中
-    COMPLETED = "completed"      # 已完成
-    FAILED = "failed"            # 失败
+    """Estado de la tarea"""
+    PENDING = "pending"          # Esperando
+    PROCESSING = "processing"    # Procesando
+    COMPLETED = "completed"      # Completado
+    FAILED = "failed"            # Fallido
 
 
 @dataclass
 class Task:
-    """任务数据类"""
+    """Clase de datos de la tarea"""
     task_id: str
     task_type: str
     status: TaskStatus
@@ -37,7 +37,7 @@ class Task:
     progress_detail: Dict = field(default_factory=dict)  # 详细进度信息
     
     def to_dict(self) -> Dict[str, Any]:
-        """转换为字典"""
+        """Convertir a diccionario"""
         return {
             "task_id": self.task_id,
             "task_type": self.task_type,
@@ -55,15 +55,15 @@ class Task:
 
 class TaskManager:
     """
-    任务管理器
-    线程安全的任务状态管理
+    Gestor de tareas
+    Gestión segura de tareas por hilos
     """
     
     _instance = None
     _lock = threading.Lock()
     
     def __new__(cls):
-        """单例模式"""
+        """Patrón de singleton"""
         if cls._instance is None:
             with cls._lock:
                 if cls._instance is None:
@@ -74,14 +74,14 @@ class TaskManager:
     
     def create_task(self, task_type: str, metadata: Optional[Dict] = None) -> str:
         """
-        创建新任务
+        Crear una nueva tarea
         
         Args:
-            task_type: 任务类型
-            metadata: 额外元数据
+            task_type: Tipo de tarea
+            metadata: Metadatos adicionales
             
         Returns:
-            任务ID
+            ID de la tarea
         """
         task_id = str(uuid.uuid4())
         now = datetime.now()
@@ -101,7 +101,7 @@ class TaskManager:
         return task_id
     
     def get_task(self, task_id: str) -> Optional[Task]:
-        """获取任务"""
+        """Obtener una tarea"""
         with self._task_lock:
             return self._tasks.get(task_id)
     
@@ -116,16 +116,16 @@ class TaskManager:
         progress_detail: Optional[Dict] = None
     ):
         """
-        更新任务状态
+        Actualizar el estado de la tarea
         
         Args:
-            task_id: 任务ID
-            status: 新状态
-            progress: 进度
-            message: 消息
-            result: 结果
-            error: 错误信息
-            progress_detail: 详细进度信息
+            task_id: ID de la tarea
+            status: Nuevo estado
+            progress: Progreso
+            message: Mensaje
+            result: Resultado
+            error: Información de error
+            progress_detail: Información de progreso detallada
         """
         with self._task_lock:
             task = self._tasks.get(task_id)
@@ -145,7 +145,7 @@ class TaskManager:
                     task.progress_detail = progress_detail
     
     def complete_task(self, task_id: str, result: Dict):
-        """标记任务完成"""
+        """Marcar la tarea como completada"""
         self.update_task(
             task_id,
             status=TaskStatus.COMPLETED,
@@ -155,7 +155,7 @@ class TaskManager:
         )
     
     def fail_task(self, task_id: str, error: str):
-        """标记任务失败"""
+        """Marcar la tarea como fallida"""
         self.update_task(
             task_id,
             status=TaskStatus.FAILED,
@@ -164,7 +164,7 @@ class TaskManager:
         )
     
     def list_tasks(self, task_type: Optional[str] = None) -> list:
-        """列出任务"""
+        """Listar tareas"""
         with self._task_lock:
             tasks = list(self._tasks.values())
             if task_type:
@@ -172,7 +172,7 @@ class TaskManager:
             return [t.to_dict() for t in sorted(tasks, key=lambda x: x.created_at, reverse=True)]
     
     def cleanup_old_tasks(self, max_age_hours: int = 24):
-        """清理旧任务"""
+        """Limpiar tareas antiguas"""
         from datetime import timedelta
         cutoff = datetime.now() - timedelta(hours=max_age_hours)
         

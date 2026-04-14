@@ -5,17 +5,17 @@ MiroFish Backend 启动入口
 import os
 import sys
 
-# 解决 Windows 控制台中文乱码问题：在所有导入之前设置 UTF-8 编码
+# Solucionar el problema de visualización de caracteres chinos en la consola de Windows: establecer la codificación UTF-8 antes de todas las importaciones
 if sys.platform == 'win32':
-    # 设置环境变量确保 Python 使用 UTF-8
+    # Establecer la variable de entorno para asegurar que Python use UTF-8
     os.environ.setdefault('PYTHONIOENCODING', 'utf-8')
-    # 重新配置标准输出流为 UTF-8
+    # Reconfigurar el flujo de salida estándar a UTF-8
     if hasattr(sys.stdout, 'reconfigure'):
         sys.stdout.reconfigure(encoding='utf-8', errors='replace')
     if hasattr(sys.stderr, 'reconfigure'):
         sys.stderr.reconfigure(encoding='utf-8', errors='replace')
 
-# 添加项目根目录到路径
+# Agregar el directorio raíz del proyecto a la ruta
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from app import create_app
@@ -24,7 +24,7 @@ from app.config import Config
 
 def main():
     """Función principal"""
-    # 验证配置
+    # Validar configuración
     errors = Config.validate()
     if errors:
         print("Errores de configuración:")
@@ -33,15 +33,15 @@ def main():
         print("\nPor favor, revise la configuración en el archivo .env")
         sys.exit(1)
     
-    # 创建应用
+    # Crear aplicación
     app = create_app()
     
-    # 获取运行配置
+    # Obtener configuración de ejecución
     host = os.environ.get('FLASK_HOST', '0.0.0.0')
     port = int(os.environ.get('FLASK_PORT', 5001))
     debug = Config.DEBUG
     
-    # 启动服务
+    # Iniciar servicio
     app.run(host=host, port=port, debug=debug, threaded=True)
 
 
