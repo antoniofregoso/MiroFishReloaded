@@ -208,6 +208,7 @@ const handleNewProject = async () => {
     const formData = new FormData()
     pending.files.forEach(f => formData.append('files', f))
     formData.append('simulation_requirement', pending.simulationRequirement)
+    formData.append('personality_mode', pending.personalityMode)
     
     const res = await generateOntology(formData)
     if (res.success) {

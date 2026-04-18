@@ -7,12 +7,14 @@ import { reactive } from 'vue'
 const state = reactive({
   files: [],
   simulationRequirement: '',
+  personalityMode: 'LIFESTYLE',
   isPending: false
 })
 
-export function setPendingUpload(files, requirement) {
+export function setPendingUpload(files, requirement, personalityMode = 'LIFESTYLE') {
   state.files = files
   state.simulationRequirement = requirement
+  state.personalityMode = personalityMode
   state.isPending = true
 }
 

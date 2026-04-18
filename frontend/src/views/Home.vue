@@ -172,10 +172,28 @@
               <span>{{ $t('home.inputParams') }}</span>
             </div>
 
-            <!-- Área de entrada -->
+            <!-- Sección de selección de modo de personalidad -->
             <div class="console-section">
               <div class="console-header">
-                <span class="console-label">{{ $t('home.simulationPrompt') }}</span>
+                <span class="console-label">02 - {{ $t('home.personalityModeLabel') }}</span>
+              </div>
+              <div class="input-wrapper">
+                <select
+                  v-model="formData.personalityMode"
+                  class="code-select"
+                  :disabled="loading"
+                >
+                  <option value="MBTI">MBTI</option>
+                  <option value="LIFESTYLE">{{ $t('home.personalityModeLifestyle') }}</option>
+                  <option value="OCEAN">OCEAN</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Área de entrada del prompt -->
+            <div class="console-section">
+              <div class="console-header">
+                <span class="console-label">03 - {{ $t('home.simulationPrompt') }}</span>
               </div>
               <div class="input-wrapper">
                 <textarea
@@ -221,6 +239,7 @@ const router = useRouter()
 
 // Datos del formulario
 const formData = ref({
+  personalityMode: 'LIFESTYLE',
   simulationRequirement: ''
 })
 
@@ -300,7 +319,7 @@ const startSimulation = () => {
   
   // Almacenar los datos pendientes de carga
   import('../store/pendingUpload.js').then(({ setPendingUpload }) => {
-    setPendingUpload(files.value, formData.value.simulationRequirement)
+    setPendingUpload(files.value, formData.value.simulationRequirement, formData.value.personalityMode)
     
     // Redirigir inmediatamente a la página de Proceso (usando un identificador especial para indicar un nuevo proyecto)
     router.push({
@@ -812,6 +831,24 @@ const startSimulation = () => {
   resize: vertical;
   outline: none;
   min-height: 150px;
+}
+
+.code-select {
+  width: 100%;
+  border: none;
+  background: transparent;
+  padding: 20px;
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  line-height: 1.6;
+  outline: none;
+  color: var(--black);
+  cursor: pointer;
+}
+
+.code-select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .model-badge {
