@@ -1,6 +1,6 @@
 <template>
   <div class="home-container">
-    <!-- 顶部导航栏 -->
+    <!-- Barra de navegación superior -->
     <nav class="navbar">
       <div class="nav-brand">MIROFISH</div>
       <div class="nav-links">
@@ -12,7 +12,7 @@
     </nav>
 
     <div class="main-content">
-      <!-- 上半部分：Hero 区域 -->
+      <!-- Mitad superior: Región del Hero -->
       <section class="hero-section">
         <div class="hero-left">
           <div class="tag-row">
@@ -42,7 +42,7 @@
         </div>
         
         <div class="hero-right">
-          <!-- Logo 区域 -->
+          <!-- Área del logo -->
           <div class="logo-container">
             <img src="../assets/logo/MiroFish_logo_left.jpeg" alt="MiroFish Logo" class="hero-logo" />
           </div>
@@ -53,9 +53,9 @@
         </div>
       </section>
 
-      <!-- 下半部分：双栏布局 -->
+      <!-- Mitad inferior: Diseño de dos columnas -->
       <section class="dashboard-section">
-        <!-- 左栏：状态与步骤 -->
+        <!-- Columna izquierda: Estado y pasos -->
         <div class="left-panel">
           <div class="panel-header">
             <span class="status-dot">■</span> {{ $t('home.systemStatus') }}
@@ -66,7 +66,7 @@
             {{ $t('home.systemReadyDesc') }}
           </p>
           
-          <!-- 数据指标卡片 -->
+          <!-- Tarjetas indicadoras de datos -->
           <div class="metrics-row">
             <div class="metric-card">
               <div class="metric-value">{{ $t('home.metricLowCost') }}</div>
@@ -78,7 +78,7 @@
             </div>
           </div>
 
-          <!-- 项目模拟步骤介绍 (新增区域) -->
+          <!-- Pasos de la simulación del proyecto (nueva área) -->
           <div class="steps-container">
             <div class="steps-header">
                <span class="diamond-icon">◇</span> {{ $t('home.workflowSequence') }}
@@ -123,10 +123,10 @@
           </div>
         </div>
 
-        <!-- 右栏：交互控制台 -->
+        <!-- Columna derecha: Consola interactiva -->
         <div class="right-panel">
           <div class="console-box">
-            <!-- 上传区域 -->
+            <!-- Área de carga -->
             <div class="console-section">
               <div class="console-header">
                 <span class="console-label">{{ $t('home.realitySeed') }}</span>
@@ -167,12 +167,12 @@
               </div>
             </div>
 
-            <!-- 分割线 -->
+            <!-- Línea divisoria -->
             <div class="console-divider">
               <span>{{ $t('home.inputParams') }}</span>
             </div>
 
-            <!-- 输入区域 -->
+            <!-- Área de entrada -->
             <div class="console-section">
               <div class="console-header">
                 <span class="console-label">{{ $t('home.simulationPrompt') }}</span>
@@ -189,7 +189,7 @@
               </div>
             </div>
 
-            <!-- 启动按钮 -->
+            <!-- Botón de inicio -->
             <div class="console-section btn-section">
               <button 
                 class="start-engine-btn"
@@ -205,7 +205,7 @@
         </div>
       </section>
 
-      <!-- 历史项目数据库 -->
+      <!-- Historial de proyectos -->
       <HistoryDatabase />
     </div>
   </div>
@@ -219,41 +219,41 @@ import LanguageSwitcher from '../components/LanguageSwitcher.vue'
 
 const router = useRouter()
 
-// 表单数据
+// Datos del formulario
 const formData = ref({
   simulationRequirement: ''
 })
 
-// 文件列表
+// Lista de archivos
 const files = ref([])
 
-// 状态
+// Estado
 const loading = ref(false)
 const error = ref('')
 const isDragOver = ref(false)
 
-// 文件输入引用
+// Archivo de entrada reference
 const fileInput = ref(null)
 
-// 计算属性:是否可以提交
+// Propiedad calculada: si se puede enviar
 const canSubmit = computed(() => {
   return formData.value.simulationRequirement.trim() !== '' && files.value.length > 0
 })
 
-// 触发文件选择
+// Selección de archivo de activación
 const triggerFileInput = () => {
   if (!loading.value) {
     fileInput.value?.click()
   }
 }
 
-// 处理文件选择
+// Manejo de selección de archivos
 const handleFileSelect = (event) => {
   const selectedFiles = Array.from(event.target.files)
   addFiles(selectedFiles)
 }
 
-// 处理拖拽相关
+// Manejo de drag and drop
 const handleDragOver = (e) => {
   if (!loading.value) {
     isDragOver.value = true
@@ -272,7 +272,7 @@ const handleDrop = (e) => {
   addFiles(droppedFiles)
 }
 
-// 添加文件
+// Agregar archivos
 const addFiles = (newFiles) => {
   const validFiles = newFiles.filter(file => {
     const ext = file.name.split('.').pop().toLowerCase()
@@ -281,12 +281,12 @@ const addFiles = (newFiles) => {
   files.value.push(...validFiles)
 }
 
-// 移除文件
+//Eliminar archivos
 const removeFile = (index) => {
   files.value.splice(index, 1)
 }
 
-// 滚动到底部
+// Desplázate hasta el final
 const scrollToBottom = () => {
   window.scrollTo({
     top: document.body.scrollHeight,
@@ -294,15 +294,15 @@ const scrollToBottom = () => {
   })
 }
 
-// 开始模拟 - 立即跳转，API调用在Process页面进行
+// Iniciar simulación: redirigir inmediatamente; las llamadas a la API se realizan en la página de Proceso.
 const startSimulation = () => {
   if (!canSubmit.value || loading.value) return
   
-  // 存储待上传的数据
+  // Almacenar los datos pendientes de carga
   import('../store/pendingUpload.js').then(({ setPendingUpload }) => {
     setPendingUpload(files.value, formData.value.simulationRequirement)
     
-    // 立即跳转到Process页面（使用特殊标识表示新建项目）
+    // Redirigir inmediatamente a la página de Proceso (usando un identificador especial para indicar un nuevo proyecto)
     router.push({
       name: 'Process',
       params: { projectId: 'new' }
@@ -312,7 +312,7 @@ const startSimulation = () => {
 </script>
 
 <style scoped>
-/* 全局变量与重置 */
+/* Variables globales y reinicio */
 :root {
   --black: #000000;
   --white: #FFFFFF;
@@ -321,8 +321,8 @@ const startSimulation = () => {
   --gray-text: #666666;
   --border: #E5E5E5;
   /* 
-    使用 Space Grotesk 作为主要标题字体，JetBrains Mono 作为代码/标签字体
-    确保已在 index.html 引入这些 Google Fonts 
+  Utiliza Space Grotesk como fuente principal para los títulos y JetBrains Mono para el código y las etiquetas.
+  Asegúrate de incluir estas fuentes de Google Fonts en index.html.
   */
   --font-mono: 'JetBrains Mono', monospace;
   --font-sans: 'Space Grotesk', 'Noto Sans SC', system-ui, sans-serif;
@@ -336,7 +336,7 @@ const startSimulation = () => {
   color: var(--black);
 }
 
-/* 顶部导航 */
+/* Navegación superior */
 .navbar {
   height: 60px;
   background: var(--black);
@@ -380,14 +380,14 @@ const startSimulation = () => {
   font-family: sans-serif;
 }
 
-/* 主要内容区 */
+/* Área de contenido principal */
 .main-content {
   max-width: 1400px;
   margin: 0 auto;
   padding: 60px 40px;
 }
 
-/* Hero 区域 */
+/* Área de Hero */
 .hero-section {
   display: flex;
   justify-content: space-between;
@@ -518,7 +518,7 @@ const startSimulation = () => {
 }
 
 .hero-logo {
-  max-width: 500px; /* 调整logo大小 */
+  max-width: 500px; /* Ajustar el tamaño del logotipo */
   width: 100%;
 }
 
@@ -540,7 +540,7 @@ const startSimulation = () => {
   border-color: var(--orange);
 }
 
-/* Dashboard 双栏布局 */
+/* Diseño de dashboard de dos columnas */
 .dashboard-section {
   display: flex;
   gap: 60px;
@@ -555,7 +555,7 @@ const startSimulation = () => {
   flex-direction: column;
 }
 
-/* 左侧面板 */
+/* Panel izquierdo */
 .left-panel {
   flex: 0.8;
 }
@@ -611,7 +611,7 @@ const startSimulation = () => {
   color: #999;
 }
 
-/* 项目模拟步骤介绍 */
+/* Introducción a los pasos de simulación del proyecto */
 .steps-container {
   border: 1px solid var(--border);
   padding: 30px;
@@ -667,14 +667,14 @@ const startSimulation = () => {
   color: var(--gray-text);
 }
 
-/* 右侧交互控制台 */
+/* Right-side interactive console */
 .right-panel {
   flex: 1.2;
 }
 
 .console-box {
-  border: 1px solid #CCC; /* 外部实线 */
-  padding: 8px; /* 内边距形成双重边框感 */
+  border: 1px solid #CCC; /* línea continua exterior */
+  padding: 8px; /* Los márgenes interiores crean un efecto de doble borde. */
 }
 
 .console-section {
@@ -842,7 +842,7 @@ const startSimulation = () => {
   overflow: hidden;
 }
 
-/* 可点击状态（非禁用） */
+/* Clicable (no deshabilitado) */
 .start-engine-btn:not(:disabled) {
   background: var(--black);
   border: 1px solid var(--black);
@@ -867,14 +867,14 @@ const startSimulation = () => {
   border: 1px solid #E5E5E5;
 }
 
-/* 引导动画：微妙的边框脉冲 */
+/* Animación guiada: sutiles pulsaciones en los bordes */
 @keyframes pulse-border {
   0% { box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.2); }
   70% { box-shadow: 0 0 0 6px rgba(0, 0, 0, 0); }
   100% { box-shadow: 0 0 0 0 rgba(0, 0, 0, 0); }
 }
 
-/* 响应式适配 */
+/* Adaptación receptiva */
 @media (max-width: 1024px) {
   .dashboard-section {
     flex-direction: column;
